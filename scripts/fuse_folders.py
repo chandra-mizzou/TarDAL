@@ -2,6 +2,7 @@ import argparse
 import logging
 from pathlib import Path
 from typing import List, Tuple
+import sys
 
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -9,6 +10,11 @@ from torchvision.transforms import Resize
 from kornia.color import ycbcr_to_rgb
 from kornia.geometry import resize as k_resize
 import yaml
+
+# allow running from any working directory by adding repo root to sys.path
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from config import from_dict
 from pipeline.fuse import Fuse
@@ -97,7 +103,7 @@ def save_predictions(fus: torch.Tensor, names: List[str], shapes: List[torch.Siz
 
 def main():
     parser = argparse.ArgumentParser(description='TarDAL folder-based fusion of paired IR/VI images')
-    parser.add_argument('--cfg', default='config/official/tardal-dt.yaml', help='config file path')
+    parser.add_argument('--cfg', default='config/official/infer/tardal-dt.yaml', help='config file path')
     parser.add_argument('--ir_dir', required=True, help='directory of infrared images')
     parser.add_argument('--vi_dir', required=True, help='directory of visible images')
     parser.add_argument('--out_dir', default='runs/fused-folders', help='directory to save fused outputs')
